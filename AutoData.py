@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, ttk
-import openpyxl
+from tkinter import filedialog
 import pandas as pd
 
 # DataFrame que irá armazenar todas as colunas e linhas
@@ -20,22 +19,26 @@ def abrir_arquivo_excel():
 
     arquivo_excel = filedialog.askopenfilename(filetypes=[("Arquivos Excel", "*.xlsx")])
     if arquivo_excel:
-        workbook = openpyxl.load_workbook(arquivo_excel)
-        for sheet_name in workbook.sheetnames:
-            sheet = workbook[sheet_name]
+        # Ler o arquivo Excel selecionado em um DataFrame
+        dataframe_excel = pd.read_excel(arquivo_excel)
 
-            for coluna in dataframe.columns:
-                if coluna in sheet[1]:
-                    coluna_excel = sheet[1][coluna]
-                    for i, valor in enumerate(dataframe[coluna], start=2):
-                        coluna_excel[i].value = valor
+        # Substituir colunas correspondentes no DataFrame Excel
+        for coluna in dataframe.columns:
+            if coluna in dataframe_excel.columns:
+                dataframe_excel[coluna] = dataframe[coluna]
 
+        # Salvar o DataFrame Excel resultante em um novo arquivo
         arquivo_salvar = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Arquivos Excel", "*.xlsx")])
         if arquivo_salvar:
-            workbook.save(arquivo_salvar)
+            dataframe_excel.to_excel(arquivo_salvar, index=False)
+
+        voltar_ao_inicio()
+
+def voltar_ao_inicio():
+    escolher_arquivo()
 
 if __name__ == "__main__":
     root = tk.Tk()
-    escolher_button = tk.Button(root, text="Escolha o arquivo com colunas e linhas", command=escolher_arquivo)
+    escolher_button = tk.Button(root, text="Escolha a Base Primaria", command=escolher_arquivo)
     escolher_button.pack()
     root.mainloop()
