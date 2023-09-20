@@ -7,6 +7,7 @@ import threading
 
 # DataFrame que irá armazenar todas as colunas e linhas
 dataframe = None
+root = None
 
 def escolher_arquivo():
     global dataframe
@@ -14,10 +15,13 @@ def escolher_arquivo():
     if arquivo:
         # Carregar o arquivo Excel selecionado em um DataFrame
         dataframe = pd.read_excel(arquivo)
-        selecionar_segundo_arquivo()
+        mostrar_botao_segundo_arquivo()
+
+def mostrar_botao_segundo_arquivo():
+    escolher_button.pack_forget()  # Remover o botão de escolher a base primária
+    selecionar_button.pack()  # Mostrar o botão para selecionar o segundo arquivo
 
 def selecionar_segundo_arquivo():
-    root.withdraw()  # Esconder a janela principal
     arquivo_excel = filedialog.askopenfilename(filetypes=[("Arquivos Excel", "*.xlsx")])
     if arquivo_excel:
         # Ler o arquivo Excel selecionado em um DataFrame
@@ -41,7 +45,7 @@ def selecionar_segundo_arquivo():
 
             progress_bar.stop()  # Parar a barra de progresso
             progress_bar.pack_forget()  # Remover a barra de progresso
-            messagebox.showinfo("Concluído", "Análise e Modificações concluídas com sucesso!👍")
+            messagebox.showinfo("Concluído", "Análise e Modificações concluídas com sucesso!")
 
             # Pedir ao usuário para escolher onde salvar o arquivo resultante
             arquivo_salvar = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Arquivos Excel", "*.xlsx")])
@@ -55,8 +59,8 @@ def selecionar_segundo_arquivo():
         processing_thread.start()
 
 def voltar_ao_inicio():
-    root.deiconify()  # Mostrar a janela principal
-    escolher_arquivo()
+    selecionar_button.pack_forget()  # Remover o botão de seleção do segundo arquivo
+    escolher_button.pack()  # Mostrar o botão de escolher a base primária novamente
 
 if __name__ == "__main__":
     root = tk.Tk()
@@ -65,4 +69,6 @@ if __name__ == "__main__":
     escolher_button = tk.Button(root, text="Escolha a Base Primaria", command=escolher_arquivo)
     escolher_button.pack()
 
+    selecionar_button = tk.Button(root, text="Escolha a Base Secundaria", command=selecionar_segundo_arquivo)
+    
     root.mainloop()
